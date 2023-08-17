@@ -3,6 +3,7 @@ package parser
 const (
 	CRLF = "\r\n"
 	EmptyBulkString = "$-1"+CRLF
+	PING = "PING"
 )
 
 func MakeOKReply() *String {

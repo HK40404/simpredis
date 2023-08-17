@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestRESP(t *testing.T) {
+func TestParser(t *testing.T) {
 	strTest := []byte("+OK\r\n")
 	errTest := []byte("-ERR Invalid Synatx\r\n")
 	intTest1 := []byte(":10010\r\n")

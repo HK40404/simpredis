@@ -11,9 +11,9 @@ import (
 )
 
 type RedisServer struct {
-	conns sync.Map			 // 管理连接
+	conns   sync.Map // 管理连接
 	closing atomic.Bool
-	engine *database.DBEngine // 用于操作数据库的manager
+	engine  *database.DBEngine // 用于操作数据库的manager
 }
 
 func (handler *RedisServer) Handle(conn net.Conn) {
@@ -27,26 +27,34 @@ func (handler *RedisServer) Handle(conn net.Conn) {
 	handler.conns.Store(client, struct{}{})
 
 	ch := parser.ParseStream(conn)
-	for reply := range ch {
-		if reply.Err != nil {
-			if reply.Err == io.EOF {
+	for request := range ch {
+		if request.Err != nil {
+			if request.Err == io.EOF {
 				logger.Info("Connection closed: %s", conn.RemoteAddr().String())
 			} else {
-				logger.Error("Get error: %v", reply.Err)
+				logger.Error("Get error: %v", request.Err)
 			}
 			return
 		}
-		if reply.Data == nil {
+		if request.Data == nil {
 			logger.Error("Parsed empty payload")
 			continue
 		}
 
-		array, ok := reply.Data.(*parser.Array)
-		if !ok {
-			logger.Error("command format is not RESP array")
-			return
+		var reply parser.RespData
+		if _, ok := request.Data.(*parser.String); ok {
+			// ping inline
+			reply = parser.NewString("PONG")
+		} else {
+			// array command
+			array, ok := request.Data.(*parser.Array)
+			if !ok {
+				logger.Error("command format is not RESP array")
+				return
+			}
+			reply = handler.engine.ExecCmd(array.Args)
 		}
-		reply := handler.engine.ExecCmd(array.Args)
+
 		if reply != nil {
 			client.Wg.Add(1)
 			if _, err := conn.Write(reply.Serialize()); err != nil {
@@ -79,7 +87,7 @@ func (handler *RedisServer) Close() {
 }
 
 func NewHandler() *RedisServer {
-	ser := &RedisServer{ engine: database.NewDBEngine() }
+	ser := &RedisServer{engine: database.NewDBEngine()}
 	ser.closing.Store(false)
 	return ser
 }

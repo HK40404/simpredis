@@ -1,7 +1,7 @@
 package database
 
 import (
-	hash "simpredis/utils"
+	"simpredis/utils/hash"
 	"sort"
 	"sync"
 )

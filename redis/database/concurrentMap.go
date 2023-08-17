@@ -2,7 +2,7 @@ package database
 
 import (
 	"math"
-	hash "simpredis/utils"
+	"simpredis/utils/hash"
 	"sync"
 )
 

@@ -20,6 +20,7 @@ func ParseStream(reader io.Reader) <-chan *Payload {
 	return ch
 } 
 
+// suport ping inline
 func parse0(rawreader io.Reader, ch chan<- *Payload) {
 	reader := bufio.NewReader(rawreader)
 	for {
@@ -68,6 +69,11 @@ func parse0(rawreader io.Reader, ch chan<- *Payload) {
 				return
 			}
 		default:
+			if string(line) == PING {
+				ch <- &Payload{
+					Data: NewString(PING),
+				}
+			}
 			continue
 		}
 	}

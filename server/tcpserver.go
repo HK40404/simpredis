@@ -31,7 +31,7 @@ func ListenAndServe(cfg *config.Config, handler Handler) error {
 	logger.Info("Server start listening at %s", addr)
 
 	// 优雅关闭
-	go func ()  {
+	go func() {
 		select {
 		case s := <-closeCh:
 			logger.Error("Get signal:%v", s)
@@ -48,24 +48,24 @@ func ListenAndServe(cfg *config.Config, handler Handler) error {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			if ne, ok := err.(net.Error); ok && ne.Timeout(){
+			if ne, ok := err.(net.Error); ok && ne.Timeout() {
 				logger.Warn("Accept occurs temporary error: %v, retry in 5ms", err)
 				time.Sleep(5 * time.Millisecond)
 				continue
 			}
-			errCh<- err
+			errCh <- err
 			break
 		}
 		logger.Info("Accept link from %s", conn.RemoteAddr().String())
 		wg.Add(1)
-		go func ()  {
+		go func() {
 			defer wg.Done()
 			handler.Handle(conn)
 		}()
 	}
-	
+
 	waitingCh := make(chan struct{})
-	go func ()  {
+	go func() {
 		wg.Wait()
 		waitingCh <- struct{}{}
 	}()
@@ -74,7 +74,7 @@ func ListenAndServe(cfg *config.Config, handler Handler) error {
 	select {
 	case <-waitingCh:
 		logger.Info("All connections are closed")
-	case <-time.After(10*time.Second):
+	case <-time.After(10 * time.Second):
 		logger.Info("Timeout: shutting down server")
 	}
 	return nil

@@ -4,7 +4,9 @@ import (
 	parser "simpredis/redis/resp"
 	"simpredis/utils/config"
 	"simpredis/utils/logger"
+	"simpredis/utils/timewheel"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -34,44 +36,34 @@ func NewDBEngine() *DBEngine {
 }
 
 func (engine *DBEngine) ExecCmd(array [][]byte) parser.RespData {
-	execFunc, ok := CmdTable[string(array[0])]
+	cmd := strings.ToLower(string(array[0]))
+	execFunc, ok := CmdTable[cmd]
 	if !ok {
 		return parser.NewError("Unsupported command")
 	}
 	return execFunc(engine, array)
 }
 
-// 要存在item，才能设置它的过期时间
-func (engine *DBEngine) SetTTL(key string, expireTime int64) bool {
-	if _, ok := engine.db.Get(key); ok {
-		_, exist := engine.ttldb.Get(key)
-		if !exist {
-			engine.ttldb.count++
-		}
-		engine.ttldb.Set(key, expireTime)
-		return true
+func (engine *DBEngine) SetTTL(key string, delayTime time.Duration) bool {
+	if delayTime < time.Duration(0) {
+		return false
 	}
-	return false
-}
 
-// 查询item时才调用checkTTL，删除相应item
-func (engine *DBEngine) CheckTTL(key string) int {
-	expireTime, ok := engine.ttldb.Get(key)
-	if !ok {
-		// key不存在
-		return NOEXIST
+	_, exist := engine.ttldb.Get(key)
+	if !exist {
+		engine.ttldb.count++
 	}
-	// 还没过期
-	if expireTime.(int64) > time.Now().Unix() {
-		return NOEXPIRED
-	} else {
-		// 过期了
+	engine.ttldb.Set(key, time.Now().Add(delayTime).Unix())
+	// 要先把之前的定时任务删除
+	timewheel.Tw.RemoveTask(key)
+	job := func () {
 		engine.lock.Lock(key)
 		defer engine.lock.UnLock(key)
 		engine.db.DelWithLock(key)
-		engine.ttldb.Del(key)
-		return EXPIRED
+		engine.DelTTL(key)
 	}
+	timewheel.Tw.AddTask(key, delayTime, job)
+	return true
 }
 
 func (engine *DBEngine) DelTTL(key string) bool {
