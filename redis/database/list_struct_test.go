@@ -1,87 +1,115 @@
 package database
 
 import (
-	"strconv"
+	"bytes"
+	"fmt"
 	"testing"
 )
 
+
+func PrintQLByPage(ql *QuickList) {
+	for e := ql.l.Front(); ; e = e.Next() {
+		page := e.Value.([]any)
+		for _, n := range page {
+			fmt.Printf("%d ", n.(int))
+		}
+		fmt.Printf("\tlen: %d cap: %d\n", len(page), cap(page))
+		if e == ql.l.Back() {
+			break
+		}
+	}
+}
+
 func TestList(t *testing.T) {
-	l := NewList()
+	PAGESIZE = 4
+	ql := NewQuickList()
 	
 	// l: [0 1 2 3 4 5 6 7 8 9]
-	// test push tail
-	for i := 5; i < 10; i++ {
-		l.PushTail(strconv.Itoa(i))
-	}
-	// test push head
-	for i := 4; i >= 0; i-- {
-		l.PushHead(strconv.Itoa(i))
-	}
-	if l.Len() != 10 {
-		t.Fail()
+	// test pushback
+	for i := 0; i < 10; i++ {
+		ql.PushBack(i)
 	}
 
-	// test index
-	if l.Index(-11) != nil {
-		t.Log("wrong result of List.Index()")
-		t.Fail()
+	// test find
+	for i := 0; i < 10; i++ {
+		n := ql.Find(i).get().(int)
+		if n != i {
+			t.Logf("Find %d ele wrong", i)
+			t.Fail()
+		}
 	}
-	if l.Index(10) != nil {
-		t.Log("wrong result of List.Index()")
-		t.Fail()
-	}
-	if l.Index(-10) == nil || l.Index(-10).val != "0" {
-		t.Log("wrong result of List.Index()")
-		t.Fail()
-	}
-	if l.Index(5) == nil || l.Index(5).val != "5" {
-		t.Log("wrong result of List.Index()")
-		t.Fail()
-	}
+
+	// test insert
+	ql.Insert(4, 33)
+	ql.Insert(10, 88)
+	ql.Insert(0, -1)
+	ql.Insert(ql.Len(), 10)
+	ql.Insert(9, 555)
+	// l: [-1 0 1 2 3 33 4 5 6 555 7 8 88 9 10]
+	PrintQLByPage(ql)
 	
-
-	// test range
-	range1 := l.Range(3, 5)
-	if len(range1) != 3 {
+	if ql.Find(0).get().(int) != -1 {
+		t.Log("Find first ele wrong")
 		t.Fail()
 	}
-	for i := 0; i < len(range1); i++ {
-		if range1[i].val != strconv.Itoa(i+3) {
-			t.Fail()
-		}
-	}
-	range1 = l.Range(-10, 123)
-	if len(range1) != 10 {
+	if ql.Find(5).get().(int) != 33 {
+		t.Log("Find 5th ele wrong")
 		t.Fail()
 	}
-	for i := 0; i < len(range1); i++ {
-		if range1[i].val != strconv.Itoa(i) {
-			t.Fail()
-		}
-	}
-	range1 = l.Range(-123, -11)
-	if range1 != nil {
+	if ql.Find(12).get().(int) != 88 {
+		t.Log("Find 11th ele wrong")
 		t.Fail()
 	}
-	range1 = l.Range(10, 123)
-	if range1 != nil {
+	if ql.Find(ql.Len()-1).get().(int) != 10 {
+		t.Log("Find last ele wrong")
 		t.Fail()
 	}
-	range1 = l.Range(6, 1)
-	if range1 != nil {
+	if ql.Find(9).get().(int) != 555 {
+		t.Log("Find last ele wrong")
 		t.Fail()
 	}
 
-	// test pop
-	l.PopHead()
-	l.PopTail()
-	range1 = l.Range(-123, 123)
-	if len(range1) != 8 {
+	ql = NewQuickList()
+	for i := 0; i < PAGESIZE; i++ {
+		ql.PushBack([]byte("123"))
+	}
+	ql.PushBack([]byte("222"))
+	ql.PushBack([]byte("223"))
+
+	// ql: [ 123 123 123 123 222 223 ]
+	ql.removeAll([]byte("2"))
+	ql.removeAll([]byte("222"))
+	if !bytes.Equal(ql.Find(ql.Len()-1).get().([]byte), []byte("223")) {
 		t.Fail()
 	}
-	for i := 0; i < len(range1); i++ {
-		if range1[i].val != strconv.Itoa(i+1) {
-			t.Fail()
-		}
+
+	// ql: [ 123 123 123 123 223 ]
+	ql.removeCount([]byte("123"), PAGESIZE/2)
+	if !bytes.Equal(ql.Find(0).get().([]byte), []byte("123")) {
+		t.Fail()
+	}
+	// ql: [ 123 123 223 ]
+	ql.removeCount([]byte("123"), PAGESIZE/2)
+	if !bytes.Equal(ql.Find(0).get().([]byte), []byte("223")) {
+		t.Fail()
+	}
+
+	ql.PushBack([]byte("999"))
+	ql.PushBack([]byte("888"))
+	ql.PushBack([]byte("999"))
+	// ql: [ 223 999 888 999 ]
+	ql.removeCountReverse([]byte("123"), PAGESIZE/2)
+	ql.removeCountReverse([]byte("999"), 1)
+	// ql: [ 223 999 888 ]
+	if !bytes.Equal(ql.Find(1).get().([]byte), []byte("999")) {
+		t.Fail()
+	}
+
+	vals := ql.Range(1,23)
+	if !bytes.Equal(vals[0], []byte("999")) {
+		t.Fail()
+	}
+	if !bytes.Equal(vals[1], []byte("888")) {
+		t.Fail()
 	}
 }

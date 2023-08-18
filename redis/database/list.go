@@ -11,21 +11,21 @@ func ExecLpush(engine *DBEngine, args [][]byte) parser.RespData {
 	}
 
 	key := string(args[1])
-	value := args[2:]
+	values := args[2:]
 
 	engine.lock.Lock(key)
 	defer engine.lock.UnLock(key)
 
-	var l *List
+	var l *QuickList
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
-		l = NewList()
+		l = NewQuickList()
 		defer engine.db.SetWithLock(key, l)
-	} else if l, ok = item.(*List); !ok {
+	} else if l, ok = item.(*QuickList); !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	for _, v := range(value) {
-		l.PushHead(string(v))
+	for _, v := range values {
+		l.Insert(0, v)
 	}
 	length := l.Len()
 	return parser.NewInteger(int64(length))
@@ -45,15 +45,15 @@ func ExecLpop(engine *DBEngine, args [][]byte) parser.RespData {
 	if !ok {
 		return parser.MakeNullBulkReply()
 	}
-	l, ok := item.(*List)
+	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	node := l.PopHead()
-	if node == nil {
+	val := l.RemoveByIndex(0)
+	if val == nil {
 		return parser.MakeNullBulkReply()
 	}
-	return parser.NewString(node.val)
+	return parser.NewBulkString(val)
 }
 
 func ExecRpush(engine *DBEngine, args [][]byte) parser.RespData {
@@ -67,16 +67,16 @@ func ExecRpush(engine *DBEngine, args [][]byte) parser.RespData {
 	engine.lock.Lock(key)
 	defer engine.lock.UnLock(key)
 
-	var l *List
+	var l *QuickList
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
-		l = NewList()
+		l = NewQuickList()
 		defer engine.db.SetWithLock(key, l)
-	} else if l, ok = item.(*List); !ok {
+	} else if l, ok = item.(*QuickList); !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	for _, v := range(value) {
-		l.PushTail(string(v))
+	for _, v := range value {
+		l.PushBack(v)
 	}
 	length := l.Len()
 	return parser.NewInteger(int64(length))
@@ -96,15 +96,15 @@ func ExecRpop(engine *DBEngine, args [][]byte) parser.RespData {
 	if !ok {
 		return parser.MakeNullBulkReply()
 	}
-	l, ok := item.(*List)
+	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	node := l.PopTail()
-	if node == nil {
+	val := l.RemoveByIndex(-1)
+	if val == nil {
 		return parser.MakeNullBulkReply()
 	}
-	return parser.NewString(node.val)
+	return parser.NewBulkString(val)
 }
 
 func ExecLindex(engine *DBEngine, args [][]byte) parser.RespData {
@@ -124,15 +124,15 @@ func ExecLindex(engine *DBEngine, args [][]byte) parser.RespData {
 	if !ok {
 		return parser.MakeNullBulkReply()
 	}
-	l, ok := item.(*List)
+	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	node := l.Index(index)
-	if node == nil {
+	val := l.GetByIndex(index)
+	if val == nil {
 		return parser.MakeNullBulkReply()
 	}
-	return parser.NewString(node.val)
+	return parser.NewBulkString(val)
 }
 
 func ExecLlen(engine *DBEngine, args [][]byte) parser.RespData {
@@ -148,7 +148,7 @@ func ExecLlen(engine *DBEngine, args [][]byte) parser.RespData {
 	if !ok {
 		return parser.NewInteger(0)
 	}
-	l, ok := item.(*List)
+	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
@@ -161,7 +161,7 @@ func ExecLrange(engine *DBEngine, args [][]byte) parser.RespData {
 	}
 
 	key := string(args[1])
-	
+
 	start, err := strconv.Atoi(string(args[2]))
 	if err != nil {
 		return parser.NewError("Start index is not an integer")
@@ -177,17 +177,13 @@ func ExecLrange(engine *DBEngine, args [][]byte) parser.RespData {
 	if !ok {
 		return parser.NewArray(nil)
 	}
-	l, ok := item.(*List)
+	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	nodes := l.Range(start, end)
-	if nodes == nil {
+	vals := l.Range(start, end)
+	if vals == nil {
 		return parser.NewArray(nil)
-	}
-	vals := make([][]byte, len(nodes))
-	for i := 0; i < len(nodes); i++ {
-		vals[i] = []byte(nodes[i].val)
 	}
 	return parser.NewArray(vals)
 }
