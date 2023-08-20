@@ -116,6 +116,7 @@ func (iter *iterator) remove() any {
 				iter.offset = 0
 			} else {
 				// 链表已经空
+				iter.ql.l.Remove(iter.ele)
 				iter.ele = nil
 				iter.offset = -1
 			}
@@ -384,7 +385,10 @@ func (ql *QuickList) RemoveByIndex(index int) []byte {
 		if index < 0 {
 			return nil
 		}
+	} else if index >= ql.len {
+		return nil
 	}
+
 	iter := ql.Find(index)
 	if iter != nil {
 		v := iter.remove()
@@ -400,11 +404,31 @@ func (ql *QuickList) GetByIndex(index int) []byte {
 		if index < 0 {
 			return nil
 		}
+	} else if index >= ql.len {
+		return nil
 	}
+
 	iter := ql.Find(index)
 	if iter != nil {
 		v := iter.get()
 		return v.([]byte)
 	}
 	return nil
+}
+
+func (ql *QuickList) Set(index int, val any) bool {
+	if index < 0 {
+		index += ql.Len()
+		if index < 0 {
+			return false
+		}
+	} else if index >= ql.len {
+		return false
+	}
+
+	iter := ql.Find(index)
+	page := iter.page()
+	page[iter.offset] = val
+	iter.ele.Value = page
+	return true
 }

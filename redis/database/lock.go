@@ -85,3 +85,37 @@ func (lock *ItemsLock) RUnLocks(keys []string) {
 		lock.l[index].RUnlock()
 	}
 }
+
+func (lock *ItemsLock) RWLocks(rkeys, wkeys []string) {
+	keys := append(rkeys, wkeys...)
+	indices := lock.indicesFromKeys(keys)
+	wIndicesSet := make(map[int]struct{}) 
+	for _, k := range wkeys {
+		index := lock.spread(k)
+		wIndicesSet[index] = struct{}{}
+	}
+	for _, index := range indices {
+		if _, ok := wIndicesSet[index]; ok {
+			lock.l[index].Lock()
+		} else {
+			lock.l[index].RLock()
+		}
+	}
+}
+
+func (lock *ItemsLock) RWUnLocks(rkeys, wkeys []string) {
+	keys := append(rkeys, wkeys...)
+	indices := lock.indicesFromKeys(keys)
+	wIndicesSet := make(map[int]struct{}) 
+	for _, k := range wkeys {
+		index := lock.spread(k)
+		wIndicesSet[index] = struct{}{}
+	}
+	for _, index := range indices {
+		if _, ok := wIndicesSet[index]; ok {
+			lock.l[index].Unlock()
+		} else {
+			lock.l[index].RUnlock()
+		}
+	}
+}

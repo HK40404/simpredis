@@ -22,4 +22,13 @@ func TestRESP(t *testing.T) {
 	if !bytes.Equal(NewArray(nilsArray).Serialize(), nilsArrayByte) {
 		t.Fail()
 	}
+
+	// "" and (nil) 
+	if bytes.Equal(NewBulkString(make([]byte, 0)).Serialize(), NewBulkString(nil).Serialize()) {
+		t.Fail()
+	}
+
+	if !bytes.Equal(NewArray(make([][]byte, 0)).Serialize(), NewArray(nil).Serialize()) {
+		t.Fail()
+	}
 }

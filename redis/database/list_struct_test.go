@@ -46,7 +46,7 @@ func TestList(t *testing.T) {
 	ql.Insert(ql.Len(), 10)
 	ql.Insert(9, 555)
 	// l: [-1 0 1 2 3 33 4 5 6 555 7 8 88 9 10]
-	PrintQLByPage(ql)
+	// PrintQLByPage(ql)
 	
 	if ql.Find(0).get().(int) != -1 {
 		t.Log("Find first ele wrong")

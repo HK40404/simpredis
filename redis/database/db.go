@@ -66,6 +66,11 @@ func (engine *DBEngine) SetTTL(key string, delayTime time.Duration) bool {
 	return true
 }
 
+func(engine *DBEngine) CancelTTL(key string) {
+	timewheel.Tw.RemoveTask(key)
+	engine.DelTTL(key)
+}
+
 func (engine *DBEngine) DelTTL(key string) bool {
 	if _, ok := engine.ttldb.Get(key); ok {
 		engine.ttldb.count--

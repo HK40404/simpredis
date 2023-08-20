@@ -3,6 +3,7 @@ package parser
 import (
 	"errors"
 	"strconv"
+	"bytes"
 )
 
 const (
@@ -26,10 +27,7 @@ func NewString(data string) *String {
 }
 
 func (ss *String) Serialize() []byte {
-	raws := []byte{StringBegin}
-	raws = append(raws, []byte(ss.Arg)...)
-	raws = append(raws, []byte(CRLF)...)
-	return raws
+	return []byte("+" + ss.Arg + CRLF)
 }
 
 type Error struct {
@@ -41,10 +39,7 @@ func NewError(data string) *Error{
 }
 
 func (e *Error) Serialize() []byte {
-	raws := []byte{ErrorBegin}
-	raws = append(raws, []byte(e.Arg)...)
-	raws = append(raws, []byte(CRLF)...)
-	return raws
+	return []byte("-" + e.Arg + CRLF)
 }
 
 type Integer struct {
@@ -56,11 +51,7 @@ func NewInteger(num int64) *Integer {
 }
 
 func (e *Integer) Serialize() []byte {
-	raws := []byte{IntegerBegin}
-	num := []byte(strconv.FormatInt(e.Arg, 10))
-	raws = append(raws, num...)
-	raws = append(raws, []byte(CRLF)...)
-	return raws
+	return []byte(":" + strconv.FormatInt(e.Arg, 10) + CRLF)
 }
 
 func SendProtocolError(ch chan<- *Payload, msg string) {
@@ -81,9 +72,7 @@ func (bs *BulkString) Serialize() []byte {
 	if bs.Arg == nil {
 		return []byte(EmptyBulkString)
 	}
-	header := string(BulkStringBegin) + strconv.Itoa(len(bs.Arg)) + CRLF
-	body := string(bs.Arg) + CRLF
-	return []byte(header + body)
+	return []byte(string(BulkStringBegin) + strconv.Itoa(len(bs.Arg)) + CRLF + string(bs.Arg) + CRLF)
 }
 
 type Array struct {
@@ -95,9 +84,15 @@ func NewArray(strs [][]byte) *Array {
 }
 
 func (array *Array) Serialize() []byte {
-	res := []byte(string(ArrayBegin) + strconv.Itoa(len(array.Args)) + CRLF)
-	for _, v := range array.Args {
-		res = append(res, NewBulkString(v).Serialize()...)
+	argLen := len(array.Args)
+	var buf bytes.Buffer
+	buf.WriteString("*" + strconv.Itoa(argLen) + CRLF)
+	for _, arg := range array.Args {
+		if arg == nil {
+			buf.WriteString("$-1" + CRLF)
+		} else {
+			buf.WriteString("$" + strconv.Itoa(len(arg)) + CRLF + string(arg) + CRLF)
+		}
 	}
-	return res
+	return buf.Bytes()
 }
