@@ -16,5 +16,5 @@ jobs:
       - name: send coveralls
         uses: coverallsapp/github-action@v2
         with:
-          path-to-profile: profile.cov
+          file: profile.cov
             
