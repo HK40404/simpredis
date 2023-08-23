@@ -60,18 +60,21 @@ func (engine *DBEngine) SetTTL(key string, delayTime time.Duration) bool {
 		engine.lock.Lock(key)
 		defer engine.lock.UnLock(key)
 		engine.db.DelWithLock(key)
-		engine.DelTTL(key)
+		engine.delTTL(key)
 	}
 	timewheel.Tw.AddTask(key, delayTime, job)
 	return true
 }
 
-func(engine *DBEngine) CancelTTL(key string) {
-	timewheel.Tw.RemoveTask(key)
-	engine.DelTTL(key)
+func(engine *DBEngine) CancelTTL(key string) bool {
+	if engine.delTTL(key) {
+		timewheel.Tw.RemoveTask(key)
+		return true
+	}
+	return false
 }
 
-func (engine *DBEngine) DelTTL(key string) bool {
+func (engine *DBEngine) delTTL(key string) bool {
 	if _, ok := engine.ttldb.Get(key); ok {
 		engine.ttldb.count--
 		engine.ttldb.Del(key)

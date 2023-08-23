@@ -28,6 +28,7 @@ func TestRESP(t *testing.T) {
 		t.Fail()
 	}
 
+	// (empty list or set)
 	if !bytes.Equal(NewArray(make([][]byte, 0)).Serialize(), NewArray(nil).Serialize()) {
 		t.Fail()
 	}

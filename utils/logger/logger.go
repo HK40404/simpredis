@@ -7,10 +7,11 @@ import (
 	"os"
 	"simpredis/utils/config"
 	"time"
+	"sync"
 )
 
 var logger *log.Logger
-var logpath string
+var once sync.Once
 
 func FileExists(path string) bool {
 	_, err := os.Stat(path)
@@ -51,6 +52,8 @@ func Error(format string, a ...any) {
 }
 
 func Init() {
-	logfile := CreateLogfile("")
-	logger = log.New(io.MultiWriter(os.Stdout, logfile), "[SIMP REDIS]", log.LstdFlags)
+	once.Do(func() {
+		logfile := CreateLogfile("")
+		logger = log.New(io.MultiWriter(os.Stdout, logfile), "[SIMP REDIS]", log.LstdFlags)
+	})
 }

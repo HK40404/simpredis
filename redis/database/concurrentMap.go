@@ -109,11 +109,13 @@ func (conmap *ConcurrentMap) SetWithLock(key string, value any) {
 	}
 }
 
-func (conmap *ConcurrentMap) DelWithLock(key string) {
+func (conmap *ConcurrentMap) DelWithLock(key string) bool {
 	idx := conmap.spread(key)
 	table := conmap.table[idx]
-	if _, ok := table.m[key]; ok {
+	_, ok := table.m[key]
+	if ok {
 		conmap.count--
+		delete(table.m, key)
 	}
-	delete(table.m, key)
+	return ok
 }
