@@ -1,9 +1,10 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
-	. "simpredis/utils/client"
 	"testing"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
+	. "github.com/HK40404/simpredis/utils/client"
 )
 
 func TestHsetnxAndHgetAndHlen(t *testing.T) {
@@ -155,7 +156,7 @@ func TestHkeyvalsAndHgetall(t *testing.T) {
 	reply = engine.ExecCmd(args)
 	data = reply.(*parser.Array).Args
 	items := make(map[string]string)
-	for i := 0; i < len(data); i+=2 {
+	for i := 0; i < len(data); i += 2 {
 		items[string(data[i])] = string(data[i+1])
 	}
 
@@ -188,7 +189,7 @@ func TestHkeyvalsAndHgetall(t *testing.T) {
 	for i := 0; i < len(data); i++ {
 		vals[string(data[i])] = struct{}{}
 	}
-	
+
 	for k, v := range items {
 		if _, ok := keys[k]; !ok {
 			t.Fail()

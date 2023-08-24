@@ -1,7 +1,7 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
+	parser "github.com/HK40404/simpredis/redis/resp"
 )
 
 func ExecPing(engine *DBEngine, args [][]byte) parser.RespData {
@@ -23,7 +23,6 @@ func ExecEcho(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewError("Invalid command format")
 	}
 }
-
 
 func init() {
 	RegisterCmd("ping", ExecPing)

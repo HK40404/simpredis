@@ -2,8 +2,9 @@ package database
 
 import (
 	"math"
-	"simpredis/utils/hash"
 	"sync"
+
+	"github.com/HK40404/simpredis/utils/hash"
 )
 
 type ConcurrentMap struct {
@@ -40,7 +41,7 @@ func NewConcurrentMap(shardCount int) *ConcurrentMap {
 		count: 0,
 	}
 	for i := range conmap.table {
-		conmap.table[i] = &Shard{ m: make(map[string]any)}
+		conmap.table[i] = &Shard{m: make(map[string]any)}
 	}
 	return conmap
 }

@@ -3,10 +3,11 @@ package database
 import (
 	"bytes"
 	"math"
-	parser "simpredis/redis/resp"
 	"strconv"
 	"strings"
 	"time"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
 )
 
 const (
@@ -487,7 +488,7 @@ func ExecSetbit(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		bmLen := offset / 8
-		if offset%8 != 0 || bmLen == 0{
+		if offset%8 != 0 || bmLen == 0 {
 			bmLen++
 		}
 		bm := make([]byte, bmLen)
@@ -715,7 +716,7 @@ func ExecGetrange(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewBulkString(make([]byte, 0))
 	}
 
-	return parser.NewBulkString(bm[start:end+1])
+	return parser.NewBulkString(bm[start : end+1])
 }
 
 func init() {

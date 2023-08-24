@@ -2,10 +2,11 @@ package database
 
 import (
 	"bytes"
-	parser "simpredis/redis/resp"
-	. "simpredis/utils/client"
 	"testing"
 	"time"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
+	. "github.com/HK40404/simpredis/utils/client"
 )
 
 func TestSetAndGet(t *testing.T) {
@@ -217,7 +218,7 @@ func TestIncrAndDecr(t *testing.T) {
 	if _, ok := reply.(*parser.Error); !ok {
 		t.Fail()
 	}
-	
+
 	args = LineToArgs("incrbyfloat f 1.11")
 	reply = engine.ExecCmd(args)
 	if string(reply.(*parser.BulkString).Arg) != "1.11" {
@@ -446,7 +447,7 @@ func TestBitOps(t *testing.T) {
 	engine.ExecCmd(LineToArgs("setbit n2 3 1"))
 	engine.ExecCmd(LineToArgs("setbit n2 1 1"))
 	engine.ExecCmd(LineToArgs("setbit n2 0 1"))
-	
+
 	args = LineToArgs("bitop and res n1 n2")
 	reply = engine.ExecCmd(args)
 	if reply.(*parser.Integer).Arg != 1 {

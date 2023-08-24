@@ -1,9 +1,10 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
-	. "simpredis/utils/client"
 	"testing"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
+	. "github.com/HK40404/simpredis/utils/client"
 )
 
 func TestCon(t *testing.T) {

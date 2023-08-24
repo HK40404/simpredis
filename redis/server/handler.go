@@ -3,11 +3,12 @@ package handler
 import (
 	"io"
 	"net"
-	"simpredis/redis/database"
-	parser "simpredis/redis/resp"
-	"simpredis/utils/logger"
 	"sync"
 	"sync/atomic"
+
+	"github.com/HK40404/simpredis/redis/database"
+	parser "github.com/HK40404/simpredis/redis/resp"
+	"github.com/HK40404/simpredis/utils/logger"
 )
 
 type RedisServer struct {

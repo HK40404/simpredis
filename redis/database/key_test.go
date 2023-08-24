@@ -1,11 +1,12 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
-	. "simpredis/utils/client"
 	"strconv"
 	"testing"
 	"time"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
+	. "github.com/HK40404/simpredis/utils/client"
 )
 
 func TestExistsAndDel(t *testing.T) {
@@ -68,7 +69,7 @@ func TestExpire(t *testing.T) {
 		t.Fail()
 	}
 
-	time.Sleep(4*time.Second)
+	time.Sleep(4 * time.Second)
 
 	args = LineToArgs("ttl k")
 	reply = engine.ExecCmd(args)
@@ -93,7 +94,7 @@ func TestExpire(t *testing.T) {
 		t.Fail()
 	}
 
-	time.Sleep(2*time.Second)
+	time.Sleep(2 * time.Second)
 	args = LineToArgs("expireat k 123")
 	reply = engine.ExecCmd(args)
 	if reply.(*parser.Integer).Arg != 0 {
