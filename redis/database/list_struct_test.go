@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-
 func PrintQLByPage(ql *QuickList) {
 	for e := ql.l.Front(); ; e = e.Next() {
 		page := e.Value.([]any)
@@ -23,7 +22,7 @@ func PrintQLByPage(ql *QuickList) {
 func TestList(t *testing.T) {
 	PAGESIZE = 4
 	ql := NewQuickList()
-	
+
 	// l: [0 1 2 3 4 5 6 7 8 9]
 	// test pushback
 	for i := 0; i < 10; i++ {
@@ -47,7 +46,7 @@ func TestList(t *testing.T) {
 	ql.Insert(9, 555)
 	// l: [-1 0 1 2 3 33 4 5 6 555 7 8 88 9 10]
 	// PrintQLByPage(ql)
-	
+
 	if ql.Find(0).get().(int) != -1 {
 		t.Log("Find first ele wrong")
 		t.Fail()
@@ -105,7 +104,7 @@ func TestList(t *testing.T) {
 		t.Fail()
 	}
 
-	vals := ql.Range(1,23)
+	vals := ql.Range(1, 23)
 	if !bytes.Equal(vals[0], []byte("999")) {
 		t.Fail()
 	}

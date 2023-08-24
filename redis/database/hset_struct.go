@@ -25,7 +25,7 @@ func (ht *HashTable) Get(key string) string {
 	if !ok {
 		return ""
 	}
-	return v 
+	return v
 }
 
 func (ht *HashTable) Keys() []string {

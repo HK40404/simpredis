@@ -102,7 +102,7 @@ func TestParser(t *testing.T) {
 	} else if len(v.Arg) != 0 || v.Arg == nil {
 		t.Logf("Wrong parsed result of BulkString: %s", v.Arg)
 		t.Fail()
-	}else if !bytes.Equal(v.Serialize(), bstrTest2) {
+	} else if !bytes.Equal(v.Serialize(), bstrTest2) {
 		t.Logf("Serialized BulkString wrongly.\nParsed: %v\nShould be:%v\n", results[5].Data.Serialize(), bstrTest2)
 		t.Fail()
 	}
@@ -112,7 +112,7 @@ func TestParser(t *testing.T) {
 	} else if !bytes.Equal(v.Arg, []byte("SET")) {
 		t.Logf("Wrong parsed result of BulkString: %s", v.Arg)
 		t.Fail()
-	}else if !bytes.Equal(v.Serialize(), bstrTest3) {
+	} else if !bytes.Equal(v.Serialize(), bstrTest3) {
 		t.Logf("Serialized BulkString wrongly.\nParsed: %v\nShould be:%v\n", results[6].Data.Serialize(), bstrTest3)
 		t.Fail()
 	}
@@ -121,11 +121,11 @@ func TestParser(t *testing.T) {
 	if v, ok := results[7].Data.(*Array); !ok {
 		t.Log("Fail to parse Array type")
 		t.Fail()
-	} else if correct := bytes.Equal(v.Args[0], []byte("SET")) && 
-				   		 bytes.Equal(v.Args[1], []byte("key")) &&
-				   		 bytes.Equal(v.Args[2], []byte("value")); !correct {
-			t.Logf("Wrong parsed result of BulkString: %v", v.Args)
-			t.Fail()
+	} else if correct := bytes.Equal(v.Args[0], []byte("SET")) &&
+		bytes.Equal(v.Args[1], []byte("key")) &&
+		bytes.Equal(v.Args[2], []byte("value")); !correct {
+		t.Logf("Wrong parsed result of BulkString: %v", v.Args)
+		t.Fail()
 	} else if !bytes.Equal(v.Serialize(), arrayTest) {
 		t.Logf("Serialized BulkString wrongly.\nParsed: %v\nShould be:%v\n", results[7].Data.Serialize(), arrayTest)
 		t.Fail()

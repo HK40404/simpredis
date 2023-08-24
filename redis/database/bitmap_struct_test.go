@@ -26,7 +26,7 @@ func TestGetSetbit(t *testing.T) {
 }
 
 func TestBitCount(t *testing.T) {
-	bm := []byte{ 0b10010001, 0b11101110 }
+	bm := []byte{0b10010001, 0b11101110}
 	count := BitCount(&bm, 0, 4)
 	if count != 2 {
 		t.Log(count)
@@ -60,20 +60,20 @@ func TestBitCount(t *testing.T) {
 
 func TestBitOp(t *testing.T) {
 	vals := [][]byte{
-		{ 9 },
-		{ 5, 0 },
-		{ 1, 0, 0x80 },
+		{9},
+		{5, 0},
+		{1, 0, 0x80},
 	}
 	res := BitOp("and", vals)
-	if !bytes.Equal(res, []byte{1,0,0}) {
+	if !bytes.Equal(res, []byte{1, 0, 0}) {
 		t.Fail()
 	}
 	res = BitOp("or", vals)
-	if !bytes.Equal(res, []byte{0x0d,0,0x80}) {
+	if !bytes.Equal(res, []byte{0x0d, 0, 0x80}) {
 		t.Fail()
 	}
 	res = BitOp("xor", vals)
-	if !bytes.Equal(res, []byte{0x0d,0,0x80}) {
+	if !bytes.Equal(res, []byte{0x0d, 0, 0x80}) {
 		t.Fail()
 	}
 	res = BitOp("not", vals[0:1])
@@ -82,15 +82,15 @@ func TestBitOp(t *testing.T) {
 	}
 	vals[1] = nil
 	res = BitOp("and", vals)
-	if !bytes.Equal(res, []byte{0,0,0}) {
+	if !bytes.Equal(res, []byte{0, 0, 0}) {
 		t.Fail()
 	}
 	res = BitOp("or", vals)
-	if !bytes.Equal(res, []byte{0x09,0,0x80}) {
+	if !bytes.Equal(res, []byte{0x09, 0, 0x80}) {
 		t.Fail()
 	}
 	res = BitOp("xor", vals)
-	if !bytes.Equal(res, []byte{0x08,0,0x80}) {
+	if !bytes.Equal(res, []byte{0x08, 0, 0x80}) {
 		t.Fail()
 	}
 	res = BitOp("not", vals[1:2])

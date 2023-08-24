@@ -397,7 +397,6 @@ func (ql *QuickList) RemoveByIndex(index int) []byte {
 	return nil
 }
 
-
 func (ql *QuickList) GetByIndex(index int) []byte {
 	if index < 0 {
 		index += ql.Len()

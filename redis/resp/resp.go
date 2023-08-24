@@ -1,29 +1,29 @@
 package parser
 
 import (
+	"bytes"
 	"errors"
 	"strconv"
-	"bytes"
 )
 
 const (
-	StringBegin = '+'
-	ErrorBegin = '-'
-	IntegerBegin = ':'
+	StringBegin     = '+'
+	ErrorBegin      = '-'
+	IntegerBegin    = ':'
 	BulkStringBegin = '$'
-	ArrayBegin = '*'
+	ArrayBegin      = '*'
 )
 
 type RespData interface {
 	Serialize() []byte
 }
 
-type String struct{
+type String struct {
 	Arg string
 }
 
 func NewString(data string) *String {
-	return &String{ Arg: data }
+	return &String{Arg: data}
 }
 
 func (ss *String) Serialize() []byte {
@@ -34,8 +34,8 @@ type Error struct {
 	Arg string
 }
 
-func NewError(data string) *Error{
-	return &Error{ Arg: data }
+func NewError(data string) *Error {
+	return &Error{Arg: data}
 }
 
 func (e *Error) Serialize() []byte {
@@ -47,7 +47,7 @@ type Integer struct {
 }
 
 func NewInteger(num int64) *Integer {
-	return &Integer{ Arg: num }
+	return &Integer{Arg: num}
 }
 
 func (e *Integer) Serialize() []byte {
@@ -59,13 +59,12 @@ func SendProtocolError(ch chan<- *Payload, msg string) {
 	ch <- &Payload{Err: err}
 }
 
-
 type BulkString struct {
 	Arg []byte
 }
 
 func NewBulkString(data []byte) *BulkString {
-	return &BulkString{ Arg: data}
+	return &BulkString{Arg: data}
 }
 
 func (bs *BulkString) Serialize() []byte {
@@ -80,7 +79,7 @@ type Array struct {
 }
 
 func NewArray(strs [][]byte) *Array {
-	return &Array{ Args: strs }
+	return &Array{Args: strs}
 }
 
 func (array *Array) Serialize() []byte {

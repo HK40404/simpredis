@@ -7,10 +7,9 @@ import (
 	"strconv"
 )
 
-
 type Payload struct {
 	Data RespData
-	Err error
+	Err  error
 }
 
 // 从reader中解析数据流成resp命令
@@ -18,7 +17,7 @@ func ParseStream(reader io.Reader) <-chan *Payload {
 	ch := make(chan *Payload)
 	go parse0(reader, ch)
 	return ch
-} 
+}
 
 // suport ping inline
 func parse0(rawreader io.Reader, ch chan<- *Payload) {
@@ -26,18 +25,18 @@ func parse0(rawreader io.Reader, ch chan<- *Payload) {
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
-			ch <- &Payload{ Err: err }
+			ch <- &Payload{Err: err}
 			return
 		}
 		// 判断是否为空行或者不以CRLF结尾（不符合RESP）
-		if (len(line) <= 2 || line[len(line)-2] != '\r') {
+		if len(line) <= 2 || line[len(line)-2] != '\r' {
 			// 直接忽略这一行
 			continue
 		}
 		line = bytes.TrimSuffix(line, []byte(CRLF))
-		switch(line[0]) {
+		switch line[0] {
 		case StringBegin:
-			ch <- &Payload {
+			ch <- &Payload{
 				Data: NewString(string(line[1:])),
 			}
 		case ErrorBegin:
@@ -85,7 +84,7 @@ func parseBulkString(reader *bufio.Reader, line string, ch chan<- *Payload) erro
 		SendProtocolError(ch, "invalid bulkstring length")
 		return nil
 	} else if byteCount == -1 {
-		ch <- &Payload{ Data: NewBulkString(nil) }
+		ch <- &Payload{Data: NewBulkString(nil)}
 		return nil
 	}
 
@@ -94,7 +93,7 @@ func parseBulkString(reader *bufio.Reader, line string, ch chan<- *Payload) erro
 	if err != nil {
 		return err
 	}
-	ch <- &Payload{ Data: NewBulkString(buf[:len(buf)-2]) }
+	ch <- &Payload{Data: NewBulkString(buf[:len(buf)-2])}
 	return nil
 }
 
@@ -104,7 +103,7 @@ func parseArray(reader *bufio.Reader, header string, ch chan<- *Payload) error {
 		SendProtocolError(ch, "invalid bulkstring count of array")
 		return nil
 	}
-	
+
 	array := make([][]byte, strCount)
 	for i := 0; i < strCount; i++ {
 		line, err := reader.ReadBytes('\n')
@@ -112,8 +111,8 @@ func parseArray(reader *bufio.Reader, header string, ch chan<- *Payload) error {
 			return err
 		}
 		// 判断是否为空行或者不以CRLF结尾（不符合RESP）
-		if (len(line) <= 2 || line[len(line)-2] != '\r' || line[0] != BulkStringBegin) {
-			// 直接忽略这一行 
+		if len(line) <= 2 || line[len(line)-2] != '\r' || line[0] != BulkStringBegin {
+			// 直接忽略这一行
 			SendProtocolError(ch, "invalid bulkstring format")
 			return nil
 		}
@@ -135,6 +134,6 @@ func parseArray(reader *bufio.Reader, header string, ch chan<- *Payload) error {
 		}
 		array[i] = buf[:len(buf)-2]
 	}
-	ch <- &Payload{ Data: NewArray(array)}
+	ch <- &Payload{Data: NewArray(array)}
 	return nil
 }

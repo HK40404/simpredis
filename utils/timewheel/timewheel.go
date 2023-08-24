@@ -8,28 +8,28 @@ import (
 
 type TimeWheel struct {
 	interval time.Duration
-	slotnum int
-	hand int 			// 指针
-	ticker *time.Ticker
-	slots []*list.List
-	tasks map[string]*Location	// 保存列表元素位置
+	slotnum  int
+	hand     int // 指针
+	ticker   *time.Ticker
+	slots    []*list.List
+	tasks    map[string]*Location // 保存列表元素位置
 
-	closeCh chan struct{}
-	addtaskCh chan *Task
+	closeCh      chan struct{}
+	addtaskCh    chan *Task
 	removetaskCh chan string
 }
 
 type Location struct {
 	slotIndex int
-	ele *list.Element
+	ele       *list.Element
 }
 
 type Task struct {
-	key string
+	key      string
 	interval time.Duration // 延迟的时间
-	pos int                // 在时间轮盘上的位置
-	circle int             // 需要在时间轮盘上走的圈数
-	job func()
+	pos      int           // 在时间轮盘上的位置
+	circle   int           // 需要在时间轮盘上走的圈数
+	job      func()
 }
 
 var once sync.Once
@@ -39,10 +39,10 @@ func InitTimeWheel(interval time.Duration, slotnum int) *TimeWheel {
 	once.Do(func() {
 		Tw = &TimeWheel{
 			interval: interval,
-			slotnum: slotnum,
-			hand: 0, 
-			slots: make([]*list.List, slotnum),
-			tasks: make(map[string]*Location),
+			slotnum:  slotnum,
+			hand:     0,
+			slots:    make([]*list.List, slotnum),
+			tasks:    make(map[string]*Location),
 		}
 		for i := 0; i < slotnum; i++ {
 			Tw.slots[i] = &list.List{}
@@ -75,7 +75,7 @@ func (Tw *TimeWheel) run() {
 		case <-Tw.closeCh:
 			Tw.ticker.Stop()
 			return
-		}	
+		}
 	}
 }
 
@@ -102,13 +102,12 @@ func (Tw *TimeWheel) movehand() {
 	}
 }
 
-
 func (Tw *TimeWheel) addTask(task *Task) {
 	delaySec := int(task.interval.Seconds())
 	intervalSec := int(Tw.interval.Seconds())
 	task.circle = delaySec / (intervalSec * Tw.slotnum)
 	task.pos = (Tw.hand + delaySec/intervalSec) % Tw.slotnum
-	
+
 	if task.pos == Tw.hand {
 		if task.circle > 0 {
 			// 已经走过当前位置了,circle要减1
@@ -118,10 +117,10 @@ func (Tw *TimeWheel) addTask(task *Task) {
 			task.pos++
 		}
 	}
-	
+
 	ele := Tw.slots[task.pos].PushBack(task)
 	Tw.tasks[task.key] = &Location{
-		ele: ele,
+		ele:       ele,
 		slotIndex: task.pos,
 	}
 }
@@ -131,9 +130,9 @@ func (Tw *TimeWheel) AddTask(key string, delay time.Duration, job func()) {
 		return
 	}
 	Tw.addtaskCh <- &Task{
-		key: key,
+		key:      key,
 		interval: delay,
-		job: job,
+		job:      job,
 	}
 }
 

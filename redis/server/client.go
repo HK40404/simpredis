@@ -8,7 +8,7 @@ import (
 
 type Client struct {
 	Conn net.Conn
-	Wg sync.WaitGroup
+	Wg   sync.WaitGroup
 }
 
 func NewClient(con net.Conn) *Client {
@@ -20,9 +20,9 @@ func NewClient(con net.Conn) *Client {
 // 给还在传输数据的连接一些时间处理
 func (c *Client) Close() {
 	ch := make(chan struct{})
-	go func ()  {
+	go func() {
 		c.Wg.Wait()
-		ch <- struct{}{}	
+		ch <- struct{}{}
 	}()
 	select {
 	case <-ch:
