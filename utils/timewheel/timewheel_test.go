@@ -15,23 +15,26 @@ func TestTimeWheel(t *testing.T) {
 	job1 := func() {
 		defer wg.Done()
 		if counter < 1 {
+			t.Log("job1", counter)
 			t.Fail()
 		}
-		t.Log("Job1 has been done!")
+		// t.Log("Job1 has been done!")
 	}
 	job5 := func() {
 		defer wg.Done()
 		if counter < 5 {
+			t.Log("job1", counter)
 			t.Fail()
 		}
-		t.Log("Job5 has been done!")
+		// t.Log("Job5 has been done!")
 	}
 	job11 := func() {
 		defer wg.Done()
 		if counter < 11 {
+			t.Log("job1", counter)
 			t.Fail()
 		}
-		t.Log("Job11 has been done!")
+		// t.Log("Job11 has been done!")
 	}
 	job3 := func() {
 		t.Fail()
@@ -40,7 +43,7 @@ func TestTimeWheel(t *testing.T) {
 	go func() {
 		for range time.NewTicker(time.Second).C {
 			counter++
-			t.Log(counter)
+			// t.Log(counter)
 		}
 	}()
 	Tw.AddTask("1", 1*time.Second, job1)
