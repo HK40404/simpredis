@@ -1,12 +1,12 @@
 package logger
 
 import (
-	"os"
-	"testing"
 	"bufio"
-	"strings"
-	"log"
 	"io"
+	"log"
+	"os"
+	"strings"
+	"testing"
 )
 
 func TestInfo(t *testing.T) {

@@ -2,12 +2,12 @@ package logger
 
 import (
 	"fmt"
+	"github.com/HK40404/simpredis/utils/config"
 	"io"
 	"log"
 	"os"
 	"sync"
 	"time"
-	"github.com/HK40404/simpredis/utils/config"
 )
 
 var logger *log.Logger

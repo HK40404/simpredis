@@ -21,15 +21,15 @@ func TestConcurrentMap(t *testing.T) {
 			conmap.Set("123_$$", v)
 		}(i)
 	}
-	
+
 	wg.Wait()
 	v, ok := conmap.Get("123_$$")
 	if !ok {
 		t.Log("Fail to set or get item")
 		t.FailNow()
 	}
-	switch(v.(int)) {
-	case 0,1,2,3,4:
+	switch v.(int) {
+	case 0, 1, 2, 3, 4:
 		t.Logf("Set value %v", v.(int))
 	default:
 		t.Logf("concurrently set value failed, should be 0-4, turned to be: %v", v.(int))
@@ -48,7 +48,7 @@ func TestConcurrentMap(t *testing.T) {
 	if v.(int) != 123 {
 		t.Logf("SetWithLock or GetWithLock Fail, should get 123, turned to get: %v", v)
 		t.Fail()
-	} 
+	}
 	v, ok = conmap.GetWithLock("sally")
 	if !ok {
 		t.Logf("Fail to setWithLock or getWithLock item: %v", v)
@@ -57,7 +57,7 @@ func TestConcurrentMap(t *testing.T) {
 	if v.(float64) != 456.12 {
 		t.Logf("SetWithLock or GetWithLock Fail, should get 456.12, turned to get: %v", v)
 		t.Fail()
-	} 
+	}
 	v, ok = conmap.GetWithLock("hello")
 	if !ok {
 		t.Logf("Fail to setWithLock or getWithLock item: %v", v)
@@ -66,5 +66,5 @@ func TestConcurrentMap(t *testing.T) {
 	if v.(string) != "world" {
 		t.Logf("SetWithLock or GetWithLock Fail, should get \"world\", turned to get: %v", v)
 		t.Fail()
-	} 
+	}
 }

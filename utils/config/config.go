@@ -2,17 +2,17 @@ package config
 
 import (
 	"bufio"
+	"errors"
 	"io"
 	"os"
 	"reflect"
 	"strings"
-	"errors"
 )
 
 type Config struct {
-	Bind string `cfg:"bind"`
-	Port string `cfg:"port"`
-	Logdir string `cfg:"logdir"`
+	Bind       string `cfg:"bind"`
+	Port       string `cfg:"port"`
+	Logdir     string `cfg:"logdir"`
 	ShardCount string `cfg:"shardcount"`
 }
 

@@ -3,14 +3,14 @@ package database
 func Grow(src *[]byte, offset int) {
 	curLen := len(*src)
 	grownedLen := offset / 8
-	if grownedLen % 8 != 0 {
+	if grownedLen%8 != 0 {
 		grownedLen++
 	}
 	*src = append(*src, make([]byte, grownedLen-curLen)...)
 }
 
 func SetBit(src *[]byte, offset int, bitVal int) {
-	if offset >= len(*src) * 8 {
+	if offset >= len(*src)*8 {
 		Grow(src, offset)
 	}
 	index := offset / 8
@@ -25,7 +25,7 @@ func SetBit(src *[]byte, offset int, bitVal int) {
 }
 
 func GetBit(src *[]byte, offset int) int {
-	if offset >= len(*src) * 8 {
+	if offset >= len(*src)*8 {
 		return 0
 	}
 	index := offset / 8
@@ -34,7 +34,7 @@ func GetBit(src *[]byte, offset int) int {
 	v := (*src)[index] & byte(mask)
 	if v > 0 {
 		return 1
-	} 
+	}
 	return 0
 }
 
@@ -74,7 +74,6 @@ func BitCount(src *[]byte, start, end int) int {
 
 // 不要改变原来的vals[i]
 // 不要append vals
-// 
 func BitOp(op string, vals [][]byte) []byte {
 	maxLen := 0
 	for _, v := range vals {

@@ -9,7 +9,7 @@ func TestRESP(t *testing.T) {
 	emptyArrayByte := []byte("*0\r\n")
 	if !bytes.Equal(NewArray(nil).Serialize(), emptyArrayByte) {
 		t.Fail()
-	} 
+	}
 	if !bytes.Equal(NewArray(make([][]byte, 0, 10)).Serialize(), emptyArrayByte) {
 		t.Fail()
 	}
@@ -23,7 +23,7 @@ func TestRESP(t *testing.T) {
 		t.Fail()
 	}
 
-	// "" and (nil) 
+	// "" and (nil)
 	if bytes.Equal(NewBulkString(make([]byte, 0)).Serialize(), NewBulkString(nil).Serialize()) {
 		t.Fail()
 	}

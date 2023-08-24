@@ -11,7 +11,7 @@ type CmdFuc func(db *DBEngine, array [][]byte) parser.RespData
 
 func RegisterCmd(cmd string, fun CmdFuc) {
 	if _, ok := CmdTable[cmd]; ok {
-		logger.Error("this cmd has been registerd!")
+		logger.Error("this cmd has been registered!")
 		return
 	}
 	CmdTable[cmd] = fun
