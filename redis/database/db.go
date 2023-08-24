@@ -32,7 +32,7 @@ func NewDBEngine() *DBEngine {
 	return &DBEngine{
 		db:    NewConcurrentMap(shardCount),
 		ttldb: NewConcurrentMap(shardCount),
-		lock:  NewItemsLock(shardCount * 4),
+		lock:  NewItemsLock(shardCount),
 	}
 }
 

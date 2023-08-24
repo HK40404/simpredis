@@ -14,21 +14,21 @@ func TestTimeWheel(t *testing.T) {
 	wg.Add(3)
 	job1 := func() {
 		defer wg.Done()
-		if !(counter >= 0 && counter <= 2) {
+		if counter < 1 {
 			t.Fail()
 		}
 		t.Log("Job1 has been done!")
 	}
 	job5 := func() {
 		defer wg.Done()
-		if !(counter >= 4 && counter <= 6) {
+		if counter < 5 {
 			t.Fail()
 		}
 		t.Log("Job5 has been done!")
 	}
 	job11 := func() {
 		defer wg.Done()
-		if !(counter >= 10 && counter <= 12) {
+		if counter < 11 {
 			t.Fail()
 		}
 		t.Log("Job11 has been done!")
