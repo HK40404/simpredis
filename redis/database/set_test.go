@@ -1,10 +1,11 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
-	. "simpredis/utils/client"
 	"strconv"
 	"testing"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
+	. "github.com/HK40404/simpredis/utils/client"
 )
 
 func TestSadd(t *testing.T) {
@@ -104,7 +105,7 @@ func TestSdiffAndSdiffstore(t *testing.T) {
 	if reply.(*parser.Integer).Arg != 4 {
 		t.Fail()
 	}
-	
+
 	args = LineToArgs("sdiff s3 ")
 	reply = engine.ExecCmd(args)
 	data = reply.(*parser.Array).Args
@@ -166,7 +167,7 @@ func TestSinterAndSinterstore(t *testing.T) {
 	if reply.(*parser.Integer).Arg != 5 {
 		t.Fail()
 	}
-	
+
 	args = LineToArgs("sinter s3 ")
 	reply = engine.ExecCmd(args)
 	data = reply.(*parser.Array).Args
@@ -229,7 +230,7 @@ func TestSunionAndSunionstore(t *testing.T) {
 	if reply.(*parser.Integer).Arg != 6 {
 		t.Fail()
 	}
-	
+
 	args = LineToArgs("sunion s")
 	reply = engine.ExecCmd(args)
 	data = reply.(*parser.Array).Args
@@ -272,7 +273,7 @@ func TestSismemberAndSmembers(t *testing.T) {
 	if data != nil {
 		t.Fail()
 	}
-	
+
 	args = LineToArgs("smembers s")
 	reply = engine.ExecCmd(args)
 	data = reply.(*parser.Array).Args
@@ -328,7 +329,7 @@ func TestSmove(t *testing.T) {
 	if reply.(*parser.Integer).Arg != 1 {
 		t.Fail()
 	}
-	
+
 	args = LineToArgs("smembers s3")
 	reply = engine.ExecCmd(args)
 	data := reply.(*parser.Array).Args

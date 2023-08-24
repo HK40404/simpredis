@@ -1,8 +1,9 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
 	"strconv"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
 )
 
 func ExecHset(engine *DBEngine, args [][]byte) parser.RespData {
@@ -48,7 +49,7 @@ func ExecHget(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.MakeNullBulkReply()
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -73,12 +74,12 @@ func ExecHlen(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	return parser.NewInteger(int64(hset.Len()))	
+	return parser.NewInteger(int64(hset.Len()))
 }
 
 func ExecHkeys(engine *DBEngine, args [][]byte) parser.RespData {
@@ -93,7 +94,7 @@ func ExecHkeys(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewArray(nil)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -118,7 +119,7 @@ func ExecHvals(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewArray(nil)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -143,7 +144,7 @@ func ExecHgetall(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewArray(nil)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -157,7 +158,7 @@ func ExecHgetall(engine *DBEngine, args [][]byte) parser.RespData {
 }
 
 func ExecHmset(engine *DBEngine, args [][]byte) parser.RespData {
-	if len(args) < 4 || len(args) % 2 != 0 {
+	if len(args) < 4 || len(args)%2 != 0 {
 		return parser.NewError("Invalid command format")
 	}
 	key := string(args[1])
@@ -177,7 +178,7 @@ func ExecHmset(engine *DBEngine, args [][]byte) parser.RespData {
 		}
 	}
 
-	for i := 2; i < len(args); i+=2 {
+	for i := 2; i < len(args); i += 2 {
 		field := string(args[i])
 		value := string(args[i+1])
 		hset.Set(field, value)
@@ -197,7 +198,7 @@ func ExecHmget(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewArray(nil)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -228,7 +229,7 @@ func ExecHexists(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -252,7 +253,7 @@ func ExecHdel(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 	
+	}
 	hset, ok := item.(*HashTable)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -336,7 +337,7 @@ func ExecHincrby(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewError("Hash value is not an integer")
 	}
 	hset.Set(field, strconv.Itoa(inc+n))
-	return parser.NewInteger(int64(inc+n))
+	return parser.NewInteger(int64(inc + n))
 }
 
 func ExecHincrbyfloat(engine *DBEngine, args [][]byte) parser.RespData {

@@ -1,10 +1,10 @@
 package main
 
 import (
-	handler "simpredis/redis/server"
-	"simpredis/server"
-	"simpredis/utils/config"
-	"simpredis/utils/logger"
+	handler "github.com/HK40404/simpredis/redis/server"
+	"github.com/HK40404/simpredis/server"
+	"github.com/HK40404/simpredis/utils/config"
+	"github.com/HK40404/simpredis/utils/logger"
 )
 
 func Initialize() {

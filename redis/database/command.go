@@ -1,8 +1,8 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
-	"simpredis/utils/logger"
+	parser "github.com/HK40404/simpredis/redis/resp"
+	"github.com/HK40404/simpredis/utils/logger"
 )
 
 var CmdTable = make(map[string]CmdFuc)

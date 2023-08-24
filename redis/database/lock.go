@@ -1,9 +1,10 @@
 package database
 
 import (
-	"simpredis/utils/hash"
 	"sort"
 	"sync"
+
+	"github.com/HK40404/simpredis/utils/hash"
 )
 
 type ItemsLock struct {
@@ -12,7 +13,7 @@ type ItemsLock struct {
 
 func NewItemsLock(lockCount int) *ItemsLock {
 	lockCount = GetCompacity(lockCount)
-	itemlock := &ItemsLock{ l: make([]sync.RWMutex, lockCount) }
+	itemlock := &ItemsLock{l: make([]sync.RWMutex, lockCount)}
 	return itemlock
 }
 
@@ -89,7 +90,7 @@ func (lock *ItemsLock) RUnLocks(keys []string) {
 func (lock *ItemsLock) RWLocks(rkeys, wkeys []string) {
 	keys := append(rkeys, wkeys...)
 	indices := lock.indicesFromKeys(keys)
-	wIndicesSet := make(map[int]struct{}) 
+	wIndicesSet := make(map[int]struct{})
 	for _, k := range wkeys {
 		index := lock.spread(k)
 		wIndicesSet[index] = struct{}{}
@@ -106,7 +107,7 @@ func (lock *ItemsLock) RWLocks(rkeys, wkeys []string) {
 func (lock *ItemsLock) RWUnLocks(rkeys, wkeys []string) {
 	keys := append(rkeys, wkeys...)
 	indices := lock.indicesFromKeys(keys)
-	wIndicesSet := make(map[int]struct{}) 
+	wIndicesSet := make(map[int]struct{})
 	for _, k := range wkeys {
 		index := lock.spread(k)
 		wIndicesSet[index] = struct{}{}

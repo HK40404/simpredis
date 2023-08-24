@@ -1,9 +1,10 @@
 package database
 
 import (
-	parser "simpredis/redis/resp"
-	"time"
 	"strconv"
+	"time"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
 )
 
 func ExecTTL(engine *DBEngine, args [][]byte) parser.RespData {
@@ -11,7 +12,7 @@ func ExecTTL(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewError("Invalid command format")
 	}
 	key := string(args[1])
-	
+
 	engine.lock.RLock(key)
 	defer engine.lock.RUnLock(key)
 	if _, ok := engine.db.GetWithLock(key); !ok {
@@ -37,7 +38,7 @@ func ExecExpire(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewError("Value is not an integer or out of range")
 	}
 
-	engine.lock.RLock(key)	
+	engine.lock.RLock(key)
 	defer engine.lock.RUnLock(key)
 	_, ok := engine.db.GetWithLock(key)
 	if !ok {
@@ -51,7 +52,7 @@ func ExecExpire(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewInteger(1)
 	}
 
-	engine.SetTTL(key, time.Duration(seconds) * time.Second)
+	engine.SetTTL(key, time.Duration(seconds)*time.Second)
 	return parser.NewInteger(1)
 }
 
@@ -69,7 +70,7 @@ func ExecExpireat(engine *DBEngine, args [][]byte) parser.RespData {
 		return parser.NewInteger(0)
 	}
 
-	engine.lock.RLock(key)	
+	engine.lock.RLock(key)
 	defer engine.lock.RUnLock(key)
 	_, ok := engine.db.GetWithLock(key)
 	if !ok {
@@ -150,7 +151,7 @@ func ExecRename(engine *DBEngine, args [][]byte) parser.RespData {
 
 	key := string(args[1])
 	newkey := string(args[2])
-	
+
 	engine.lock.Locks([]string{key, newkey})
 	defer engine.lock.UnLocks([]string{key, newkey})
 
@@ -182,7 +183,7 @@ func ExecRenamenx(engine *DBEngine, args [][]byte) parser.RespData {
 
 	key := string(args[1])
 	newkey := string(args[2])
-	
+
 	engine.lock.Locks([]string{key, newkey})
 	defer engine.lock.UnLocks([]string{key, newkey})
 
@@ -215,7 +216,7 @@ func ExecType(engine *DBEngine, args [][]byte) parser.RespData {
 	}
 
 	key := string(args[1])
-	
+
 	engine.lock.RLock(key)
 	defer engine.lock.RUnLock(key)
 

@@ -5,9 +5,9 @@ import (
 	"io"
 	"log"
 	"os"
-	"simpredis/utils/config"
-	"time"
 	"sync"
+	"time"
+	"github.com/HK40404/simpredis/utils/config"
 )
 
 var logger *log.Logger

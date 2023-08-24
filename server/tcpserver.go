@@ -4,11 +4,12 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"simpredis/utils/config"
-	"simpredis/utils/logger"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/HK40404/simpredis/utils/config"
+	"github.com/HK40404/simpredis/utils/logger"
 )
 
 type Handler interface {

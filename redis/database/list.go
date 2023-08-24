@@ -2,9 +2,10 @@ package database
 
 import (
 	"bytes"
-	parser "simpredis/redis/resp"
 	"strconv"
 	"strings"
+
+	parser "github.com/HK40404/simpredis/redis/resp"
 )
 
 func ExecLpush(engine *DBEngine, args [][]byte) parser.RespData {
@@ -233,7 +234,7 @@ func ExecLpushX(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 
+	}
 	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -256,7 +257,7 @@ func ExecRpushX(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 
+	}
 	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -281,12 +282,12 @@ func ExecRpopLpush(engine *DBEngine, args [][]byte) parser.RespData {
 	srcitem, ok := engine.db.GetWithLock(keys[0])
 	if !ok {
 		return parser.MakeNullBulkReply()
-	} 
+	}
 	srcl, ok := srcitem.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
 	}
-	
+
 	dstitem, ok := engine.db.GetWithLock(keys[1])
 	var dstl *QuickList
 	if !ok {
@@ -307,7 +308,7 @@ func ExecRpopLpush(engine *DBEngine, args [][]byte) parser.RespData {
 }
 
 func ExecLinsert(engine *DBEngine, args [][]byte) parser.RespData {
-	if len(args) != 5  {
+	if len(args) != 5 {
 		return parser.NewError("Invalid command format")
 	}
 
@@ -326,7 +327,7 @@ func ExecLinsert(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 
+	}
 	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -356,7 +357,7 @@ func ExecLinsert(engine *DBEngine, args [][]byte) parser.RespData {
 }
 
 func ExecLrem(engine *DBEngine, args [][]byte) parser.RespData {
-	if len(args) != 4  {
+	if len(args) != 4 {
 		return parser.NewError("Invalid command format")
 	}
 
@@ -373,7 +374,7 @@ func ExecLrem(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.NewInteger(0)
-	} 
+	}
 	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -388,7 +389,7 @@ func ExecLrem(engine *DBEngine, args [][]byte) parser.RespData {
 }
 
 func ExecLtrim(engine *DBEngine, args [][]byte) parser.RespData {
-	if len(args) != 4  {
+	if len(args) != 4 {
 		return parser.NewError("Invalid command format")
 	}
 
@@ -408,7 +409,7 @@ func ExecLtrim(engine *DBEngine, args [][]byte) parser.RespData {
 	item, ok := engine.db.GetWithLock(key)
 	if !ok {
 		return parser.MakeOKReply()
-	} 
+	}
 	l, ok := item.(*QuickList)
 	if !ok {
 		return parser.NewError("WRONGTYPE Operation against a key holding the wrong kind of value")
@@ -423,7 +424,7 @@ func ExecLtrim(engine *DBEngine, args [][]byte) parser.RespData {
 			start = 0
 		}
 	} else if start >= l.len {
-		removeAll =true
+		removeAll = true
 	}
 	if stop < 0 {
 		stop += l.len
