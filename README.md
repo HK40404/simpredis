@@ -42,6 +42,7 @@ Simpredis is a high performance In-Memory Database written by golang.
 - OS: Ubuntu 20.04.2 VM, Linux 5.15.0
 - CPU: i9-12900K \* 8, 3.2 GHz
 - RAM: 6GB in VM
+
 **benchmark**
 - redis-benchmark
 ```shell
