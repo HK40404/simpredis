@@ -29,7 +29,7 @@ func GetCompacity(num int) int {
 	n |= n >> 8
 	n |= n >> 16
 	if n >= math.MaxUint32 {
-		return math.MaxUint32
+		return 1 << 30
 	}
 	return int(n + 1)
 }
